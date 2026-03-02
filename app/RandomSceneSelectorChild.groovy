@@ -3,7 +3,7 @@ definition(
     namespace: 'dylanm.rss.child',
     parent: 'dylanm.rss:Random Scene Selector',
     author: 'dylanm',
-    description: 'Creates a scene activator button that chooses a random Hue scene. v0.1.1',
+    description: 'Creates a scene activator button that chooses a random Hue scene. v0.1.2',
     category: 'Convenience',
     iconUrl: '',
     iconX2Url: '',
@@ -16,7 +16,19 @@ preferences {
         section('Selector settings') {
             input 'selectorName', 'text', title: 'Random Selector Name', required: true
             input 'overrideSwitches', 'capability.switch', title: 'Override Switches', multiple: true, required: false
-            input 'hueMode', 'enum', title: 'Hue Scene Mode (1-9)', required: true, options: (1..9).collectEntries { [("${it}"): "${it}"] }, defaultValue: '1'
+            input 'hueMode', 'enum', title: 'Hue Scene Mode (1-9)', required: true,
+                options: [
+                    '1': '1 - Default',
+                    '2': '2 - Dynamic palette',
+                    '3': '3 - Static',
+                    '4': '4 - Dynamic palette, custom duration',
+                    '5': '5 - Static, custom duration',
+                    '6': '6 - Dynamic palette, custom brightness',
+                    '7': '7 - Static, custom brightness',
+                    '8': '8 - Dynamic palette, custom duration and brightness',
+                    '9': '9 - Static, custom duration and brightness'
+                ],
+                defaultValue: '1'
             input 'scenes', 'capability.actuator', title: 'Scenes to randomize', multiple: true, required: true
             input 'enableDebug', 'bool', title: 'Enable debug logging', defaultValue: false, required: false
         }
@@ -28,6 +40,7 @@ def updated() { unsubscribe(); initialize() }
 def uninstalled() { deleteActivator() }
 
 def initialize() {
+    updateAppLabel()
     def button = createOrUpdateActivator()
     if (button) subscribe(button, 'pushed', handlePushed)
 }
@@ -68,6 +81,11 @@ def createOrUpdateActivator() {
 def deleteActivator() {
     def device = getChildDevice("rss-activator-${app.id}")
     if (device) deleteChildDevice(device.deviceNetworkId)
+}
+
+def updateAppLabel() {
+    String desired = safeName()
+    if (app.label != desired) app.updateLabel(desired)
 }
 
 def safeName() { selectorName?.trim() ?: 'Random Selector' }

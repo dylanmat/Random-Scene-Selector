@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.2] - 2026-03-02
+### Fixed
+- Hue Scene Mode selector now shows descriptive labels for options 1-9 directly in the dropdown.
+- Child app instances now update their app label to match `Random Selector Name`, so parent app child listings are identifiable by name.
+
 ## [0.1.1] - 2026-03-02
 ### Fixed
 - Fixed child app parent metadata registration issue by making `definition(...)` the first declaration in app files, so child creation no longer throws "has no parent".
