@@ -1,12 +1,9 @@
-# Change Log
+# CHANGELOG
 
 ## [0.1.0] - 2026-03-02
 
 ### Added
 
-- Initial baseline project tree and documentation files.
-- Parent Hubitat app skeleton: `RandomSceneSelectorParent.groovy`.
-- Child Hubitat app skeleton: `RandomSceneSelectorChild.groovy`.
-- Namespace definitions:
-  - Parent `dylanm.rss`
-  - Child `dylanm.rss.child`
+- Established `0.1.0` as the initial documented version.
+- Added explicit version source-of-truth policy: Groovy app `definition` metadata, mirrored in this changelog.
+- Documented pre-PR requirement to bump version and update changelog together.
