@@ -1,9 +1,22 @@
-# CHANGELOG
+# Changelog
+
+## [0.1.1] - 2026-03-02
+### Fixed
+- Fixed child app parent metadata registration issue by making `definition(...)` the first declaration in app files, so child creation no longer throws "has no parent".
+- Kept child app as parent-only (`parent: dylanm.rss:Random Scene Selector`) so it is not directly installable from Install User App.
+
+### Changed
+- Parent child-creation button title now reads `Add a Random Scene Selector`.
 
 ## [0.1.0] - 2026-03-02
-
 ### Added
+- Initial documentation set: README, CONTEXT, TODO, CHANGE
+- Main app implementation for child instance management
+- Child app implementation for virtual button creation and random scene activation
 
-- Established `0.1.0` as the initial documented version.
-- Added explicit version source-of-truth policy: Groovy app `definition` metadata, mirrored in this changelog.
-- Documented pre-PR requirement to bump version and update changelog together.
+### Changed
+- Main app naming clarified to not require "Parent" label
+- Namespace clarified and implemented as `dylanm.rss` for main app and `dylanm.rss.child` for child app
+
+### Fixed
+- N/A (initial implementation)

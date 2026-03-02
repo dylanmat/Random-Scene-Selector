@@ -1,32 +1,68 @@
-# Random Scene Selector
+# Random Scene Selector (Hubitat App)
 
-Random Scene Selector is a Hubitat Groovy app split into a parent app and child app.
+**Acronym:** rss  
+**Namespace:** `dylanm.rss`  
+**Child Namespace:** `dylanm.rss.child`  
+**Type:** Parent App + Child App (creates a child device)  
+**Version:** 0.1.1  
+**Hubitat Platform:** <BLANK: tested hub firmware version(s)>  
+**Integrations:** Philips Hue via Hubitat Hue Bridge integration (hueBridgeScene devices)
 
-## Basic use
+## What this app does
+Random Scene Selector creates a per-room (or per-group) "Scene Activator" button device that, when pressed,
+randomly activates one scene from a user-selected list of Hue scenes (hueBridgeScene devices). It also flips
+one or more "override" switches ON to prevent other automations from immediately overriding the chosen scene.
 
-1. Install the parent app and child app Groovy files in Hubitat.
-2. Open the parent app to create and manage child app instances.
-3. Configure each child app to select and run your target scene logic.
+## Key features
+- Parent app manages child instances (create/edit/delete)
+- Each child instance creates a dedicated button device:
+  - If named "Office", creates "Office Scene Activator"
+- Button press:
+  - Turns ON selected override switches
+  - Selects a random Hue scene from configured list
+  - Activates the scene using a configured Hue mode (1–9)
+- Simple configuration focused on Hue scenes
 
-## Versioning policy
+## Requirements
+- Hue integration installed and working
+- One or more Hue scenes exposed as device type `hueBridgeScene`
 
-Single source of truth for version is the `version` field in each Groovy app `definition` metadata block:
+## Installation
+1. Hubitat UI -> Apps Code -> New App -> paste `app/RandomSceneSelectorParent.groovy` -> Save
+2. Apps Code -> New App -> paste `app/RandomSceneSelectorChild.groovy` -> Save
+3. Hubitat UI -> Apps -> Add User App -> select **Random Scene Selector**
+4. In the app, create a new selector child instance for each room/group.
 
-- `apps/RandomSceneSelectorParent.groovy`
-- `apps/RandomSceneSelectorChild.groovy`
+## Configuration
+### Main app
+- Add/edit/delete child instances
 
-`CHANGE.md` mirrors each released version entry and should always match the app metadata version.
+### Selector child app (per selector)
+- **Random Selector Name**: e.g. `Office`
+- **Override Switches**: switches turned ON when activator pressed
+- **Hue Scene Mode (1-9)**:
+  1. Default
+  2. Dynamic palette
+  3. Static
+  4. Dynamic palette, custom duration
+  5. Static, custom duration
+  6. Dynamic palette, custom brightness
+  7. Static, custom brightness
+  8. Dynamic palette, custom duration and brightness
+  9. Static, custom duration and brightness
+- **Scenes to randomize**: list of hueBridgeScene devices
 
-### How to bump versions
+## Usage
+- Press the `<Room> Scene Activator` button
+  - Override switches turn ON
+  - A random scene is activated (mode applied)
+- Optional: integrate the activator button into dashboards and automations
 
-- Patch (`0.0.1`) for minor fixes.
-- Minor (`0.1.0`) for medium changes.
-- Major (`1.0.0`) for breaking changes.
+## Development and maintenance
+- Design decisions and clarifications are in `CONTEXT.md`
+- Known issues are tracked in `TODO.md`
+- Changes are tracked in `CHANGE.md`
+- Every branch/PR update increments app version and updates changelog
 
-## Pre-PR checklist
-
-Before opening a PR:
-
-- [ ] Bump `version` in both parent and child app `definition` metadata.
-- [ ] Add/update the matching release section in `CHANGE.md`.
-- [ ] Confirm README versioning guidance still matches project practice.
+## License
+<BLANK>

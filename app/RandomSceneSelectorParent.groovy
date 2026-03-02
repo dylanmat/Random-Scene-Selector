@@ -1,66 +1,24 @@
-import groovy.transform.Field
-
-@Field static final String APP_VERSION = '0.1.0'
-
 definition(
-    name: 'Random Scene Selector Parent',
-    namespace: 'dylanm.rss.parent',
+    name: 'Random Scene Selector',
+    namespace: 'dylanm.rss',
     author: 'dylanm',
-    description: 'Parent manager for Random Scene Selector child apps.',
+    description: 'Create per-room random scene selector child apps. v0.1.1',
     category: 'Convenience',
-    importUrl: '',
-    singleInstance: true,
-    installOnOpen: true,
     iconUrl: '',
-    iconX2Url: ''
+    iconX2Url: '',
+    iconX3Url: '',
+    importUrl: '',
+    singleInstance: true
 )
 
 preferences {
-    page(name: 'mainPage', title: 'Random Scene Selector', install: true, uninstall: true)
-}
-
-def mainPage() {
-    dynamicPage(name: 'mainPage', title: 'Random Scene Selector', install: true, uninstall: true) {
-        section("Create Selector (${childApps?.size() ?: 0})") {
-            app(
-                name: 'childApps',
-                appName: 'Random Scene Selector Child',
-                namespace: 'dylanm.rss.child',
-                title: 'Add a Random Scene Selector',
-                multiple: true
-            )
-        }
-
-        if (childApps) {
-            section('Configured Selectors') {
-                childApps.sort { it.label ?: it.name }.each { child ->
-                    paragraph "• ${child.label ?: child.name}"
-                }
-            }
-        }
-
-        section('Version') {
-            paragraph "Random Scene Selector Parent v${APP_VERSION}"
+    page(name: 'mainPage', title: 'Random Scene Selector', install: true, uninstall: true) {
+        section('Selectors') {
+            app(name: 'childSelectors', appName: 'Random Scene Selector Child', namespace: 'dylanm.rss.child', title: 'Add a Random Scene Selector', multiple: true)
         }
     }
 }
 
-def installed() {
-    log.info 'Installed parent app'
-    initialize()
-}
-
-def updated() {
-    log.info 'Updated parent app'
-    unsubscribe()
-    unschedule()
-    initialize()
-}
-
-def uninstalled() {
-    childApps?.each { deleteChildApp(it.id) }
-}
-
-def initialize() {
-    log.debug "Initializing parent with ${childApps?.size() ?: 0} child app(s)"
-}
+def installed() { initialize() }
+def updated() { unsubscribe(); initialize() }
+def initialize() { }
