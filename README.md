@@ -4,7 +4,7 @@
 **Namespace:** `dylanm.rss`  
 **Child Namespace:** `dylanm.rss.child`  
 **Type:** Parent App + Child App (creates a child device)  
-**Version:** 0.1.1  
+**Version:** 0.1.2  
 **Hubitat Platform:** <BLANK: tested hub firmware version(s)>  
 **Integrations:** Philips Hue via Hubitat Hue Bridge integration (hueBridgeScene devices)
 
