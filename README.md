@@ -1,68 +1,77 @@
-# Random Scene Selector (Hubitat App)
+# Random Scene Selector
 
-**Acronym:** rss  
-**Namespace:** `dylanm.rss`  
-**Child Namespace:** `dylanm.rss.child`  
-**Type:** Parent App + Child App (creates a child device)  
-**Version:** 0.1.2  
-**Hubitat Platform:** <BLANK: tested hub firmware version(s)>  
-**Integrations:** Philips Hue via Hubitat Hue Bridge integration (hueBridgeScene devices)
+Random Scene Selector is a Hubitat parent/child app that creates per-room or per-group scene activator button devices for Philips Hue scenes exposed through Hubitat.
 
-## What this app does
-Random Scene Selector creates a per-room (or per-group) "Scene Activator" button device that, when pressed,
-randomly activates one scene from a user-selected list of Hue scenes (hueBridgeScene devices). It also flips
-one or more "override" switches ON to prevent other automations from immediately overriding the chosen scene.
+When a scene activator button is pressed, the child app turns on configured override switches, chooses one configured Hue scene at random, and activates it with the selected Hue mode.
 
-## Key features
-- Parent app manages child instances (create/edit/delete)
-- Each child instance creates a dedicated button device:
-  - If named "Office", creates "Office Scene Activator"
-- Button press:
-  - Turns ON selected override switches
-  - Selects a random Hue scene from configured list
-  - Activates the scene using a configured Hue mode (1–9)
-- Simple configuration focused on Hue scenes
+## Project Identity
+- App name: Random Scene Selector
+- Acronym: `rss`
+- Parent namespace: `dylanm.rss`
+- Child namespace: `dylanm.rss.child`
+- Type: Hubitat parent app plus child app
+- Current app version: `0.1.2`
+- Hubitat platform: TBD - owner confirmation required for tested hub firmware versions
+- Integration: Philips Hue through the Hubitat Hue Bridge integration, using `hueBridgeScene` devices
+- License: TBD - owner confirmation required
+
+## Audience
+- Hubitat users who want a lightweight way to randomize Hue scene activation by room or group.
+- Project maintainers and AI coding agents updating the Hubitat app and its documentation.
+
+## Core Capabilities
+- Parent app manages child selector instances.
+- Each child selector creates a dedicated `<Name> Scene Activator` virtual button device.
+- Button 1 activates one random scene from the selector's configured scene list.
+- Configured override switches are turned on before the selected scene is activated.
+- Hue scene mode can be selected from modes 1 through 9.
 
 ## Requirements
-- Hue integration installed and working
-- One or more Hue scenes exposed as device type `hueBridgeScene`
+- Hubitat hub with user app support.
+- Hubitat Hue Bridge integration installed and working.
+- One or more Hue scenes exposed as devices compatible with `hueBridgeScene` behavior.
 
 ## Installation
-1. Hubitat UI -> Apps Code -> New App -> paste `app/RandomSceneSelectorParent.groovy` -> Save
-2. Apps Code -> New App -> paste `app/RandomSceneSelectorChild.groovy` -> Save
-3. Hubitat UI -> Apps -> Add User App -> select **Random Scene Selector**
-4. In the app, create a new selector child instance for each room/group.
+1. In Hubitat, open Apps Code.
+2. Create a new app from [app/RandomSceneSelectorParent.groovy](app/RandomSceneSelectorParent.groovy).
+3. Create a new app from [app/RandomSceneSelectorChild.groovy](app/RandomSceneSelectorChild.groovy).
+4. Open Apps, choose Add User App, and select Random Scene Selector.
+5. Create a selector child instance for each room or group.
+
+The child app is parent-only and should not be installed directly from Add User App.
 
 ## Configuration
-### Main app
-- Add/edit/delete child instances
+### Parent App
+- Add, edit, and delete random scene selector child instances.
 
-### Selector child app (per selector)
-- **Random Selector Name**: e.g. `Office`
-- **Override Switches**: switches turned ON when activator pressed
-- **Hue Scene Mode (1-9)**:
-  1. Default
-  2. Dynamic palette
-  3. Static
-  4. Dynamic palette, custom duration
-  5. Static, custom duration
-  6. Dynamic palette, custom brightness
-  7. Static, custom brightness
-  8. Dynamic palette, custom duration and brightness
-  9. Static, custom duration and brightness
-- **Scenes to randomize**: list of hueBridgeScene devices
+### Selector Child App
+- Random Selector Name: room/group label such as `Office`.
+- Override Switches: optional switches turned on before scene activation.
+- Hue Scene Mode (1-9):
+  - `1`: Default
+  - `2`: Dynamic palette
+  - `3`: Static
+  - `4`: Dynamic palette, custom duration
+  - `5`: Static, custom duration
+  - `6`: Dynamic palette, custom brightness
+  - `7`: Static, custom brightness
+  - `8`: Dynamic palette, custom duration and brightness
+  - `9`: Static, custom duration and brightness
+- Scenes to randomize: Hue scene devices to choose from.
+- Enable debug logging: optional diagnostic logging.
 
 ## Usage
-- Press the `<Room> Scene Activator` button
-  - Override switches turn ON
-  - A random scene is activated (mode applied)
-- Optional: integrate the activator button into dashboards and automations
+Press the `<Name> Scene Activator` button from Hubitat, a dashboard, or an automation.
 
-## Development and maintenance
-- Design decisions and clarifications are in `CONTEXT.md`
-- Known issues are tracked in `TODO.md`
-- Changes are tracked in `CHANGE.md`
-- Every branch/PR update increments app version and updates changelog
+The child app turns on configured override switches, picks a random configured scene, and attempts to call `sceneOn(mode)`. If the selected scene device does not expose `sceneOn`, the app falls back to `on()`.
 
-## License
-<BLANK>
+## Development
+This project is being retrofitted into the AI project framework. Required root docs are:
+- [CONTEXT.md](CONTEXT.md): system context and guardrails.
+- [ARCHITECTURE.md](ARCHITECTURE.md): app structure, data flow, and integration blueprint.
+- [SECURITY.md](SECURITY.md): credential, data, and automation safety policy.
+- [STANDARDS.md](STANDARDS.md): coding, testing, review, and documentation standards.
+- [DECISIONS.md](DECISIONS.md): architecture decision records.
+- [ROADMAP.md](ROADMAP.md): versioned feature plans and separate TODO tracking.
+- [CHANGELOG.md](CHANGELOG.md): release history.
+- [AGENTS.md](AGENTS.md): AI agent workflow rules.

@@ -1,154 +1,114 @@
-# Context for Random Scene Selector (Hubitat App)
+# CONTEXT
 
-This file is the authoritative source of truth for:
-- Intent/scope
-- Constraints and non-goals
-- Implementation decisions
-- Clarifications/corrections (append-only)
-- Repo rules (README/CHANGE/CONTEXT/TODO)
+## System Purpose
+Random Scene Selector reduces the effort required to build random Philips Hue scene selectors in Hubitat. It creates a selector child app per room or group, and each child creates a dedicated virtual button device that activates one randomly chosen configured Hue scene.
 
-If a question is answered here, it should not be asked again.
+The app also turns on configured override switches before scene activation so other automations do not immediately override the selected scene.
 
----
+## Users & Stakeholders
+- Primary users: Hubitat users managing Hue scenes by room or group.
+- Maintainers: project owner and AI coding agents working under the root documentation framework.
+- Dependencies: Hubitat app runtime, Hubitat Hue Bridge integration, Hue scene devices exposed to Hubitat.
 
-## 1) App identity
-**App Name:** Random Scene Selector  
-**Acronym:** rss  
-**Namespace rule (always):** `dylanm.rss`  
-**Child namespace rule (always):** `dylanm.rss.child`
+## Operational Context
+- Runtime environment: Hubitat user app runtime.
+- Implementation language: Hubitat Groovy.
+- Parent app file: [app/RandomSceneSelectorParent.groovy](app/RandomSceneSelectorParent.groovy).
+- Child app file: [app/RandomSceneSelectorChild.groovy](app/RandomSceneSelectorChild.groovy).
+- External integrations: Philips Hue via Hubitat Hue Bridge integration.
+- Tested Hubitat firmware versions: TBD - owner confirmation required.
 
-**Parent filename:** `app/RandomSceneSelectorParent.groovy`  
-**Child filename:** `app/RandomSceneSelectorChild.groovy`
+## Domain Vocabulary
+- Parent app: `Random Scene Selector`, installed once in Hubitat and used to manage selector children.
+- Child app: `Random Scene Selector Child`, a parent-only child app instance for one room/group selector.
+- Scene activator: the virtual button device created by a child app.
+- Override switch: a switch turned on before scene activation to keep other automations from taking control immediately.
+- Hue mode: the integer 1-9 passed to `sceneOn(mode)` when supported by the selected scene device.
+- `hueBridgeScene`: Hubitat Hue Bridge scene device behavior expected by this app.
 
----
+## Current State
+- Version `0.1.2` is implemented in the Hubitat app files.
+- The parent app creates, edits, and deletes child selector instances.
+- The child app creates or updates a virtual button named `<Random Selector Name> Scene Activator`.
+- Button push handling turns on configured override switches, picks a random configured scene, and activates it.
+- The child app records `state.lastSelectedSceneId` and `state.lastActivatedAt`.
 
-## 2) Problem statement
-Building random scene selectors for Hue scenes in Hubitat is onerous and complicated with existing tooling.
-This app simplifies it by creating a dedicated child "Scene Activator" button per room/group that randomly
-selects from a list of Hue scenes and activates one with a chosen Hue mode. It also flips override switches ON
-to prevent other automations from immediately overriding the selected scene.
+## In Scope
+- Parent app child instance management.
+- Child app selector configuration.
+- Virtual Button child device creation and label updates.
+- Single activator button behavior.
+- Random scene selection from configured scenes.
+- Hue scene activation using modes 1-9.
+- Override switch activation.
 
----
+## Out of Scope
+- Managing Hue scene definitions.
+- Complex rule logic beyond random selection and activation.
+- Automatically turning override switches back off unless added as a future feature.
+- Multi-button behavior beyond the current single activator press.
 
-## 3) In-scope
-- Parent app can create/edit/delete child app instances
-- Child app creates a child device that behaves like a button (`<Name> Scene Activator`)
-- Child device button press triggers:
-  - Turn ON configured override switches
-  - Randomly select one Hue scene from configured list
-  - Activate the selected scene using configured Hue mode (1-9)
-- UI prompts in child creation/config:
-  - Random selector name
-  - Override switches
-  - Hue scene mode (1-9)
-  - Scenes list (hueBridgeScene devices)
+## Expected Behavior
+### Child Naming
+The user-entered Random Selector Name is trimmed and used for the child app label. The generated device label is `<Name> Scene Activator`. User spacing and casing inside the trimmed name are preserved.
 
-## 4) Out-of-scope / Non-goals
-- Managing Hue scene definitions themselves
-- Building complex logic/rules beyond random selection + activation
-- Automatically turning override switches back OFF (unless added later)
-- Multi-button behavior beyond single activator press
+### Button Mapping
+Button 1 activates a random configured scene.
 
----
+### Scene Activation
+The child app chooses one configured scene at random. If no scenes are configured, it does nothing and logs a warning. If the scene device supports `sceneOn`, the app calls `sceneOn(hueMode as Integer)`. Otherwise, it falls back to `on()`.
 
-## 5) Expected behavior (canonical)
-### Child naming rule
-- User enters Random Selector Name, e.g. `Office`
-- Created device name becomes: `Office Scene Activator`
-- Preserve user spacing/casing; trim leading/trailing spaces
+### Hue Scene Modes
+- `1`: Default
+- `2`: Dynamic palette
+- `3`: Static
+- `4`: Dynamic palette, custom duration
+- `5`: Static, custom duration
+- `6`: Dynamic palette, custom brightness
+- `7`: Static, custom brightness
+- `8`: Dynamic palette, custom duration and brightness
+- `9`: Static, custom duration and brightness
 
-### Override switches
-- Selected override switches are turned ON whenever the activator button is pressed.
-- Purpose: prevent normal programming from taking over immediately.
+## Known Limitations and Risks
+- Exact `sceneOn` behavior needs validation across Hubitat Hue integration versions.
+- Mode mapping 1-9 needs confirmation against Hubitat Hue Bridge implementation details.
+- Behavior with unavailable/offline Hue scene devices needs investigation.
+- Existing automation impact of renaming child devices needs a product decision.
 
-### Hue scene mode (1-9)
-User selects one integer 1-9 representing Hue scene activation mode:
-1: Default  
-2: Dynamic palette  
-3: Static  
-4: Dynamic palette, custom duration  
-5: Static, custom duration  
-6: Dynamic palette, custom brightness  
-7: Static, custom brightness  
-8: Dynamic palette, custom duration and brightness  
-9: Static, custom duration and brightness
+## Success Signals
+- Parent and child apps register correctly in Hubitat.
+- Child instances can be created from the parent app without parent linkage errors.
+- Each child app creates a working virtual button device.
+- A button push turns on configured override switches and activates one configured scene.
+- Empty scene lists fail safely with a warning and no scene activation.
+- Documentation and changelog entries stay aligned with behavior changes.
 
-Current implementation path:
-- Child app uses `sceneOn(hueMode as Integer)` if available.
-- Fallback to `on()` if `sceneOn` is unavailable.
+## Guardrails
+- Keep namespace values stable: parent `dylanm.rss`, child `dylanm.rss.child`.
+- Keep the child app parent-only via `parent: 'dylanm.rss:Random Scene Selector'`.
+- Keep `definition(...)` first in Hubitat app files.
+- Do not log credentials or sensitive local environment details.
+- Do not change user-facing behavior without updating `README.md`, `CONTEXT.md`, `ROADMAP.md`, and `CHANGELOG.md` as applicable.
 
-### Scene selection
-- User selects a list of Hue scenes (device type: hueBridgeScene)
-- Button press picks one at random from configured list
-- If scene list is empty:
-  - Do nothing and log warning
-
----
-
-## 6) Architecture
-### App structure
-- Main app responsibilities:
-  - Display list of child instances
-  - Create/edit/delete child instances
-  - Install/updated housekeeping
-- Child app responsibilities:
-  - Preferences UI for selector instance
-  - Create/update child device
-  - Wire button press to handler
-  - Implement random selection + activation + override switch ON behavior
-
-### Child device approach
-- Use built-in `Virtual Button` device type created per child instance.
-- Button mapping:
-  - Button 1 = Activate random scene
-
-### State model
-- settings:
-  - selectorName
-  - overrideSwitches[]
-  - hueMode (1-9)
-  - scenes[]
-- state:
-  - lastSelectedSceneId
-  - lastActivatedAt
-
-### Scheduling / subscriptions
-- Subscription:
-  - child device `pushed` event -> handler
-- No periodic schedules required
-
----
-
-## 7) Coding conventions (Hubitat Groovy)
-- UI separated from logic
-- Single logging helper with debug/info/warn/error
-- Guard rails:
-  - If disabled, do nothing
-  - If scenes list empty, do nothing
-  - Defensive checks for null devices
-- Keep event handler thin
-
----
-
-## 8) Repo/documentation rules (hard requirements)
-- README.md always current for install/config/usage
-- CHANGE.md updated for every meaningful change
-- CONTEXT.md updated with clarifications/corrections so they never come up again
-- TODO.md tracks known bugs + work items
-
----
-
-## 9) Clarifications & Corrections Log (append-only)
-
+## Clarifications & Corrections Log
 ### 2026-03-01
-- Clarification: Parent app allows selecting hueBridgeScene devices and children randomly activate scenes from a configured list.
-- Clarification: Child creation prompts for selector name, override switches to flip ON, a Hue mode number (1-9), and a list of scenes.
-- Clarification: Namespace always `dylanm.rss`, child uses `.child`.
+- Parent app allows selecting Hue scene devices and children randomly activate scenes from a configured list.
+- Child creation prompts for selector name, override switches to flip on, a Hue mode number from 1-9, and a scene list.
+- Namespace is always `dylanm.rss`; child namespace is `dylanm.rss.child`.
 
 ### 2026-03-02
-- Clarification: Main app label does not need to include the word Parent.
-- Clarification: Main app namespace does not need `.parent`; use `dylanm.rss`.
+- Main app label does not need to include the word Parent.
+- Main app namespace does not need `.parent`; use `dylanm.rss`.
 
 ### 2026-03-02 (v0.1.1)
-- Correction: `definition(...)` must be the first declaration in Hubitat app files for parent/child metadata to register reliably.
-- Correction: Child app remains non-standalone via `parent: 'dylanm.rss:Random Scene Selector'` and should not be installed directly from Install User App.
+- `definition(...)` must be the first declaration in Hubitat app files for parent/child metadata to register reliably.
+- Child app remains non-standalone via `parent: 'dylanm.rss:Random Scene Selector'` and should not be installed directly from Add User App.
+
+## Pointers
+- High-level overview: [README.md](README.md)
+- System design/details: [ARCHITECTURE.md](ARCHITECTURE.md)
+- Security expectations: [SECURITY.md](SECURITY.md)
+- Coding/testing/review conventions: [STANDARDS.md](STANDARDS.md)
+- Decision history: [DECISIONS.md](DECISIONS.md)
+- Roadmap and TODOs: [ROADMAP.md](ROADMAP.md)
+- Release notes: [CHANGELOG.md](CHANGELOG.md)
