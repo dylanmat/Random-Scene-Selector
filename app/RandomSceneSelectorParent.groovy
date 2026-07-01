@@ -2,7 +2,7 @@ definition(
     name: 'Random Scene Selector',
     namespace: 'dylanm.rss',
     author: 'dylanm',
-    description: 'Create per-room random scene selector child apps. v0.1.2',
+    description: 'Create per-room random scene selector child apps. v0.2.0',
     category: 'Convenience',
     iconUrl: '',
     iconX2Url: '',

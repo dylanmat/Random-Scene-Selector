@@ -27,7 +27,7 @@ The app also turns on configured override switches before scene activation so ot
 - `hueBridgeScene`: Hubitat Hue Bridge scene device behavior expected by this app.
 
 ## Current State
-- Version `0.1.2` is implemented in the Hubitat app files.
+- Version `0.2.0` is implemented in the Hubitat app files.
 - The parent app creates, edits, and deletes child selector instances.
 - The child app creates or updates a virtual button named `<Random Selector Name> Scene Activator`.
 - Button push handling turns on configured override switches, picks a random configured scene, and activates it.
@@ -39,6 +39,7 @@ The app also turns on configured override switches before scene activation so ot
 - Virtual Button child device creation and label updates.
 - Single activator button behavior.
 - Random scene selection from configured scenes.
+- Optional no-repeat random scene selection.
 - Hue scene activation using modes 1-9.
 - Override switch activation.
 
@@ -57,6 +58,8 @@ Button 1 activates a random configured scene.
 
 ### Scene Activation
 The child app chooses one configured scene at random. If no scenes are configured, it does nothing and logs a warning. If the scene device supports `sceneOn`, the app calls `sceneOn(hueMode as Integer)`. Otherwise, it falls back to `on()`.
+
+If `avoidRepeat` is enabled and two or more scenes are configured, the child app excludes `state.lastSelectedSceneId` from the next random candidate list. If only one scene is configured, or the previous scene is no longer configured, selection falls back to the current configured list.
 
 ### Hue Scene Modes
 - `1`: Default
@@ -103,6 +106,10 @@ The child app chooses one configured scene at random. If no scenes are configure
 ### 2026-03-02 (v0.1.1)
 - `definition(...)` must be the first declaration in Hubitat app files for parent/child metadata to register reliably.
 - Child app remains non-standalone via `parent: 'dylanm.rss:Random Scene Selector'` and should not be installed directly from Add User App.
+
+### 2026-07-01 (v0.2.0)
+- Optional no-repeat random selection is controlled per child selector with `avoidRepeat`.
+- v0.2.0 keeps the built-in Hubitat `Virtual Button`; custom driver, dashboard attribute, and next/previous controls are deferred to v0.2.5.
 
 ## Pointers
 - High-level overview: [README.md](README.md)

@@ -6,27 +6,34 @@ Track project development priorities, sequencing, and delivery status.
 Legitimate feature changes are grouped by semantic version. Bugs, defects, investigations, and housekeeping are tracked separately as TODO items. Work currently underway remains under Unreleased.
 
 ## Unreleased
-### Documentation Framework Retrofit
-- Type: Housekeeping
-- Status: In Progress
-- Owner: Project Maintainers
-- Goal: complete the migration from legacy project docs into the AI project framework.
-- Success Criteria:
-  - Legacy docs are merged into the required root docs.
-  - Superseded legacy docs are removed.
-  - Remaining unknowns are clearly identified for owner confirmation.
+No active unreleased work.
 
 ## Versioned Feature Plan
-### v0.2.0 - Scene Selection Controls
+### v0.2.0 - Documentation Retrofit + No-Repeat Random Selection
+- Status: Active
+- Owner: Project Maintainers
+- Release Date: 2026-07-01
+- Scope:
+  - Incorporate the documentation framework retrofit.
+  - Add optional no-repeat random scene selection.
+  - Keep the built-in Hubitat `Virtual Button`.
+- Acceptance Criteria:
+  - `Avoid repeating the last scene` is configurable per selector and defaults off.
+  - Existing random activation behavior remains the default.
+  - With no-repeat enabled and two or more configured scenes, the next random selection excludes the last activated scene.
+  - With no-repeat enabled and one configured scene, the single scene still activates normally.
+  - README, CONTEXT, ARCHITECTURE, CHANGELOG, and manual verification notes are updated.
+
+### v0.2.5 - Scene Activator Driver and Deterministic Controls
 - Status: Proposed
 - Feature candidates:
-  - Prevent repeating the same scene twice in a row.
+  - Add a custom Scene Activator driver.
   - Expose Last Activated Scene as an attribute for dashboards.
-  - Add Next Scene / Previous Scene deterministic mode.
+  - Add Next Scene / Previous Scene deterministic controls.
 - Acceptance Criteria:
-  - Behavior is configurable per selector.
-  - Existing random activation behavior remains the default.
-  - README, CONTEXT, CHANGELOG, and tests or manual verification notes are updated.
+  - Installation instructions include the custom driver.
+  - Existing button 1 random activation behavior is preserved unless explicitly changed by an ADR.
+  - Dashboard attributes and deterministic controls are documented and manually verified.
 
 ### v0.3.0 - Override Switch Lifecycle
 - Status: Proposed

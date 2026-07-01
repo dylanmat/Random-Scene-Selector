@@ -10,7 +10,7 @@ When a scene activator button is pressed, the child app turns on configured over
 - Parent namespace: `dylanm.rss`
 - Child namespace: `dylanm.rss.child`
 - Type: Hubitat parent app plus child app
-- Current app version: `0.1.2`
+- Current app version: `0.2.0`
 - Hubitat platform: TBD - owner confirmation required for tested hub firmware versions
 - Integration: Philips Hue through the Hubitat Hue Bridge integration, using `hueBridgeScene` devices
 - License: TBD - owner confirmation required
@@ -58,12 +58,15 @@ The child app is parent-only and should not be installed directly from Add User 
   - `8`: Dynamic palette, custom duration and brightness
   - `9`: Static, custom duration and brightness
 - Scenes to randomize: Hue scene devices to choose from.
+- Avoid repeating the last scene: optional; when enabled and two or more scenes are configured, the next random pick excludes the previously activated scene.
 - Enable debug logging: optional diagnostic logging.
 
 ## Usage
 Press the `<Name> Scene Activator` button from Hubitat, a dashboard, or an automation.
 
 The child app turns on configured override switches, picks a random configured scene, and attempts to call `sceneOn(mode)`. If the selected scene device does not expose `sceneOn`, the app falls back to `on()`.
+
+If Avoid repeating the last scene is enabled, selectors with two or more scenes skip the previously activated scene when choosing the next random scene. Selectors with one scene continue activating that scene normally.
 
 ## Development
 This project is being retrofitted into the AI project framework. Required root docs are:

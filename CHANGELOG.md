@@ -3,9 +3,16 @@
 All notable changes to Random Scene Selector should be documented here.
 
 ## [Unreleased]
+No unreleased changes.
+
+## [0.2.0] - 2026-07-01
+### Added
+- Added optional per-selector `Avoid repeating the last scene` behavior.
+
 ### Changed
 - Retrofitted project documentation into the AI project framework.
 - Merged legacy `README-orig.md`, `CONTEXT-orig.md`, `CHANGE.md`, and `TODO.md` content into the framework docs.
+- Updated app version references to `v0.2.0`.
 
 ## [0.1.2] - 2026-03-02
 ### Fixed

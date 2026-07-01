@@ -27,6 +27,7 @@ Responsibilities:
 - Subscribe to the button `pushed` event.
 - Turn on override switches.
 - Pick and activate a random configured scene.
+- Optionally avoid repeating the last selected scene.
 - Track last selected scene id and activation timestamp in state.
 
 ### Generated Device
@@ -43,10 +44,11 @@ Responsibilities:
    - `overrideSwitches`
    - `hueMode`
    - `scenes`
+   - `avoidRepeat`
    - `enableDebug`
 4. Child initialization creates or updates the virtual button and subscribes to `pushed`.
 5. Button push triggers `handlePushed`.
-6. The child app picks a random scene from `scenes`.
+6. The child app picks a random scene from `scenes`, optionally excluding `state.lastSelectedSceneId` when no-repeat mode is enabled and multiple scenes are configured.
 7. The app turns on configured override switches.
 8. The app calls `sceneOn(hueMode)` when available, otherwise `on()`.
 9. The app records `lastSelectedSceneId` and `lastActivatedAt`.
@@ -63,6 +65,7 @@ Responsibilities:
 - `overrideSwitches`: optional switch devices.
 - `hueMode`: enum value from `1` through `9`.
 - `scenes`: required list of scene actuator devices.
+- `avoidRepeat`: optional boolean that avoids selecting the last activated scene when possible.
 - `enableDebug`: optional debug logging toggle.
 
 ### State
@@ -71,6 +74,8 @@ Responsibilities:
 
 ## Error Handling and Degradation
 - Empty scene list: log warning and do nothing.
+- No-repeat mode with one scene: select the single scene normally.
+- No-repeat mode with removed previous scene: select from the current configured scene list.
 - Null devices: filtered out before use where practical.
 - Missing `sceneOn`: fall back to `on()`.
 - Scene command exception: log warning and continue without throwing.

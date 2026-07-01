@@ -3,7 +3,7 @@ definition(
     namespace: 'dylanm.rss.child',
     parent: 'dylanm.rss:Random Scene Selector',
     author: 'dylanm',
-    description: 'Creates a scene activator button that chooses a random Hue scene. v0.1.2',
+    description: 'Creates a scene activator button that chooses a random Hue scene. v0.2.0',
     category: 'Convenience',
     iconUrl: '',
     iconX2Url: '',
@@ -30,6 +30,7 @@ preferences {
                 ],
                 defaultValue: '1'
             input 'scenes', 'capability.actuator', title: 'Scenes to randomize', multiple: true, required: true
+            input 'avoidRepeat', 'bool', title: 'Avoid repeating the last scene', defaultValue: false, required: false
             input 'enableDebug', 'bool', title: 'Enable debug logging', defaultValue: false, required: false
         }
     }
@@ -57,7 +58,12 @@ def handlePushed(evt) {
 
 def pickRandomScene() {
     def choices = scenes?.findAll { it }
-    choices ? choices[new Random().nextInt(choices.size())] : null
+    if (!choices) return null
+    if (avoidRepeat && choices.size() > 1 && state.lastSelectedSceneId) {
+        def filteredChoices = choices.findAll { "${it.id}" != "${state.lastSelectedSceneId}" }
+        if (filteredChoices) choices = filteredChoices
+    }
+    choices[new Random().nextInt(choices.size())]
 }
 
 def activateScene(sceneDevice) {
